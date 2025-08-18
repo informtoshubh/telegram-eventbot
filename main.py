@@ -1,5 +1,6 @@
 import time
 import logging
+import json
 from re import search
 
 from playwright.sync_api import sync_playwright, TimeoutError
@@ -22,8 +23,14 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 MODEL_NAME = os.getenv("MODEL_NAME")
 FILE_NAME1 = os.getenv("FILE_NAME1")
 FILE_NAME2 = os.getenv("FILE_NAME2")
-CREDENTIALS_FILE = os.getenv("CREDENTIALS_FILE")
+#CREDENTIALS_FILE = os.getenv("CREDENTIALS_FILE")
 EVENTBRITE_TOKEN = os.getenv("EVENTBRITE_TOKEN")
+
+# Get credentials JSON from environment variable
+creds_json = os.getenv("GOOGLE_CREDENTIALS")
+# Parse the JSON string
+creds_dict = json.loads(creds_json)
+
 HELP_MESSAGE = """
 🤖 I can help you find events from Eventbrite.
 
@@ -40,9 +47,11 @@ You can also send:
 
 # ---------------- GOOGLE SHEETS SETUP ----------------
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+#creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 sheet = client.open(FILE_NAME1).sheet1
+
 
 # Write headers (once)
 if sheet.row_count < 1 or sheet.cell(1, 1).value != "Title":
@@ -195,7 +204,7 @@ def run_telegram_bot():
                                             event_id = event['event_id']
                                             try:
                                                 data = get_eventbrite_event_details(event_id, EVENTBRITE_TOKEN)
-                                                insert_into_google_sheet(FILE_NAME2, CREDENTIALS_FILE, data,
+                                                insert_into_google_sheet(FILE_NAME2, creds_dict, data,
                                                                          TELEGRAM_TOKEN, TELEGRAM_CHAT_ID,
                                                                          OPENAI_API_KEY, MODEL_NAME)
                                                 '''
