@@ -1,6 +1,7 @@
 import time
 import logging
 import json
+import base64
 from re import search
 
 from playwright.sync_api import sync_playwright, TimeoutError
@@ -26,9 +27,16 @@ FILE_NAME2 = os.getenv("FILE_NAME2")
 #CREDENTIALS_FILE = os.getenv("CREDENTIALS_FILE")
 EVENTBRITE_TOKEN = os.getenv("EVENTBRITE_TOKEN")
 
-# Get credentials JSON from environment variable
-creds_json = os.getenv("GOOGLE_CREDENTIALS")
-# Parse the JSON string
+# Read Base64 string from environment variable
+creds_b64 = os.getenv("GOOGLE_CREDENTIALS")
+creds_b64 = creds_b64.strip()
+
+# Fix padding
+missing_padding = len(creds_b64) % 4
+if missing_padding:
+    creds_b64 += '=' * (4 - missing_padding)
+# Decode Base64 back to JSON
+creds_json = base64.b64decode(creds_b64).decode("utf-8")
 creds_dict = json.loads(creds_json)
 
 HELP_MESSAGE = """
