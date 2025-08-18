@@ -29,6 +29,12 @@ EVENTBRITE_TOKEN = os.getenv("EVENTBRITE_TOKEN")
 
 # Read Base64 string from environment variable
 creds_b64 = os.getenv("GOOGLE_CREDENTIALS")
+if creds_b64 is None:
+    print("❌ ERROR: GOOGLE_CREDENTIALS not found in environment!")
+    print("Available vars:", list(os.environ.keys()))
+    sys.exit(1)
+else:
+    print("✅ GOOGLE_CREDENTIALS found. Length:", len(creds_b64))
 creds_b64 = creds_b64.strip()
 
 # Fix padding
