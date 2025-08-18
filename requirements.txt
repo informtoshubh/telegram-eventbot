@@ -1,0 +1,8 @@
+playwright
+gspread
+oauth2client
+python-dotenv
+openai
+groq
+python-telegram-bot
+requests
