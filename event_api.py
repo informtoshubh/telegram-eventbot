@@ -74,9 +74,10 @@ def get_eventbrite_event_details(event_id: str, token: str) -> dict:
 
     return details
 
-def insert_into_google_sheet(sheet_name: str, credentials_path: str, data: dict, bot_token: str, chat_id: str,openai_api_key: str,model):
+def insert_into_google_sheet(sheet_name: str, credentials_path: dict, data: dict, bot_token: str, chat_id: str,openai_api_key: str,model):
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
+    #creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_path, scope)
     client = gspread.authorize(creds)
 
     sheet = client.open(sheet_name).sheet1  # Opens the first sheet
